@@ -9,10 +9,14 @@ public class OTPCommand : Command {
 
 	[Inject]
 	public string MobileNumber{ get; set;}
+
+    [Inject]
+    public int OTPNumber { get; set; }
 	public override void Execute ()
 	{
 		Retain ();
-		OTPServiceInterface.SendOTPToMobileNumber (MobileNumber);
-		Release ();
+        OTPServiceInterface.SendOTPToMobileNumber (MobileNumber, OTPNumber);        
+        Release ();
 	}
+
 }

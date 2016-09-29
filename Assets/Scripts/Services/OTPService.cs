@@ -17,10 +17,13 @@ public class OTPService : IOTPServiceInterface {
 	[Inject]
 	public LoginResponseSignal LoginResponseSignal{ get; set;}
 
-	public void SendOTPToMobileNumber(string mobileno)
+    [Inject]
+    public OTPSuccessfulySentSignal OTPSuccessfulySentSignal { get; set; }
+
+    public void SendOTPToMobileNumber(string mobileno, int OTPNumber)
 	{
 		string to = "LM-FEDBCK";
-		string Body = "One Time Password for Mobile Validation is 3548. Please share your OTP number with our Agent";
+		string Body = "One Time Password for Mobile Validation is "+ OTPNumber +". Please share your OTP number with our Agent";
 		
 		Dictionary<string, string> postValues = new Dictionary<string, string> ();
 		postValues.Add ("From", mobileno);
@@ -61,12 +64,16 @@ public class OTPService : IOTPServiceInterface {
 			responseStream.Close ();
 		}
 
-		Debug.Log(postResponse);
+        OnOTPResponse(postResponse);
 	}
 
 
-	public void OnOTPResponse(object sender, UploadStringCompletedEventArgs response)
+	public void OnOTPResponse(string response)
 	{  
-
+        if(response != null)
+        {
+            OTPResponse responseData = JsonConvert.DeserializeObject<OTPResponse>(response);
+            OTPSuccessfulySentSignal.Dispatch(responseData);
+        }
 	}
 }

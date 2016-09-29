@@ -29,6 +29,7 @@ public class LoginService : ILoginService {
 			Debug.Log(data.result.ToString());
 			if(data.result == "success")
 			{
+
 				LoginResponseSignal.Dispatch(data); 	
 			}
 		}

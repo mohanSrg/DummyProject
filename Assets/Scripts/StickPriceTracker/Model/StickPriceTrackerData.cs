@@ -4,8 +4,8 @@ using System.Collections;
 public class StickPriceTrackerData {
 
 	public string memid;
-//	public System.DateTime date;
-//	public string time;
+	public string date;
+    public string time;
 
 	public int gfk_pric;
 	public int cla_price;

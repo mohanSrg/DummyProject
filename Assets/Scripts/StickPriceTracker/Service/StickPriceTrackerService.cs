@@ -6,8 +6,10 @@ using Newtonsoft.Json;
 
 public class StickPriceTrackerService : IStickPriceTrackerService {
 
+    [Inject]
+    public StickPriceTrackerSuccessfullySResponseSignal StickPriceTrackerSuccessfullySResponse { get; set; }
 
-	public void OnStickPriceTrackerDataSubmitRequest (string json)
+    public void OnStickPriceTrackerDataSubmitRequest (string json)
 	{
 		Uri URI = new Uri("http://partner-solutions.in/survey/WebServices/stickpricetricker_webservices.php");
 		WebClient wc = new WebClient();
@@ -22,7 +24,15 @@ public class StickPriceTrackerService : IStickPriceTrackerService {
 	{  
 		try            
 		{          
-			Debug.Log(response.Result.ToString());
+			if(response.Result != null)
+            {
+                StickPriceTrackerResponse responseData = JsonConvert.DeserializeObject<StickPriceTrackerResponse>(response.Result);
+                Debug.Log(response.Result);
+                if(responseData.result == "success")
+                {
+                    StickPriceTrackerSuccessfullySResponse.Dispatch();
+                }
+            }
 
 		}
 		catch(Exception exc)         

@@ -7,11 +7,12 @@ using System;
 
 public class StickPriceTrackerView : View{
 
-	public Text LoginId;
-	public InputField SurveyorName;
-	public InputField SurveyArea;
+    public GameObject StickPriceTrackerPanel;
+    public GameObject SurveyPagePanel;
+    public GameObject HeaderDetailsPanel;
 
-	public InputField Memid;
+    public Text LoginId;
+	public InputField SurveyorName;
 
 	public InputField Gfk_price;
 	public InputField Cla_price;

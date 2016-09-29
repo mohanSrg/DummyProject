@@ -4,6 +4,6 @@ using System.Net;
 
 public interface IOTPServiceInterface 
 {
-	void SendOTPToMobileNumber(string mobileNo);
-	void OnOTPResponse(object sender, UploadStringCompletedEventArgs response);
+	void SendOTPToMobileNumber(string mobileNo, int OTPNumber);
+    void OnOTPResponse(string response);
 }
