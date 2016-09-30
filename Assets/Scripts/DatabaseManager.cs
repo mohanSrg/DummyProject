@@ -11,15 +11,16 @@ public class DatabaseManager : MonoBehaviour
 
     public Dictionary<string, List<string>> brandList;
     // Use this for initialization
-    void Start()
+    void Awake()
     {
         brandList = new Dictionary<string, List<string>>();
+        
+        brandList.Add("--Select Brand--", new List<string>() { "Select Variant"});
         connectionString = "URI=file:" + Application.dataPath + "/branddb.sqlite";
         GetBrands();
-
     }
 
-    private void GetBrands()
+    public void GetBrands()
     {
         using (IDbConnection dbConnection = new SqliteConnection(connectionString))
         {
@@ -35,7 +36,7 @@ public class DatabaseManager : MonoBehaviour
                     while (reader.Read())
                     {
                         string brandName = reader.GetString(0);
-                        if(!brandList.ContainsKey(brandName))
+                        if (!brandList.ContainsKey(brandName))
                         {
                             List<string> varients = GetVarients(brandName, dbConnection);
                             brandList.Add(brandName, varients);
@@ -53,7 +54,7 @@ public class DatabaseManager : MonoBehaviour
         List<string> varients = new List<string>();
         using (IDbCommand dbCmd = dbConnection.CreateCommand())
         {
-            string varientsQuery = "SELECT * FROM brands WHERE brand=\""+ brandName + "\""  ;
+            string varientsQuery = "SELECT * FROM brands WHERE brand=\"" + brandName + "\"";
             dbCmd.CommandText = varientsQuery;
             using (IDataReader reader = dbCmd.ExecuteReader())
             {
@@ -64,11 +65,5 @@ public class DatabaseManager : MonoBehaviour
             }
         }
         return varients;
-    }
-
-    public List<string> GetAllBrandNames()
-    {
-
-        return null;
     }
 }

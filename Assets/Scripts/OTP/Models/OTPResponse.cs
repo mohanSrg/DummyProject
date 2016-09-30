@@ -1,6 +1,14 @@
 ﻿public class OTPResponse
 {
-    public string Result;
-    public string Price_DB_value;
-    public string message;
+    public TwilioResponse TwilioResponse;    
+}
+
+public class TwilioResponse
+{
+    public SMSMessage SMSMessage;
+}
+
+public class SMSMessage
+{
+    public string Status;
 }

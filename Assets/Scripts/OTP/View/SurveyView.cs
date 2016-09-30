@@ -1,86 +1,57 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 using strange.extensions.mediation.impl;
 using strange.extensions.signal.impl;
-using System.Linq;
 using System.Collections.Generic;
+using System;
 
 public class SurveyView : View {
 
     public DatabaseManager DatabaseManager;
+    public Dictionary<string, List<string>> brandAndVarients;
+    public List<string> brands;
 
-    public GameObject EnterOTPPanel;
+    
+
+    public GameObject OTPResponsePanel;
     public Button SubmitButton;
     public GameObject FeedBackcompleted;
 
     public InputField MobileNumber;
-    
+
+    public Toggle AgeNoToggle;
     public ToggleGroup ageRadio;// age radio button
     public InputField name; // name field
     public InputField phone;  // mobile no field
     public InputField email; // email field
     public ToggleGroup age;  // age field
 
-    public InputField brand;  // brand select dropdown field
-    public InputField variant;  // variant dropdown field
+    public Dropdown brand;  // brand select dropdown field
+    public Dropdown variant;  // variant dropdown field
     public InputField likemost; //field added
-    public InputField obrand;  // obrand field
-    public InputField variant2;  // variant2 field
+    public Dropdown obrand;  // obrand field
+    public Dropdown variant2;  // variant2 field
     public InputField noofsticks;  // noofsticks field
-    public InputField started;  // started field
-    public InputField sstylishness;  // pack field
-    public InputField filter;  // taste field
-    public InputField taste;
-    // $mintaftertaste=$myArray['mintaftertaste'];
-    // $crystallball=$myArray['crystallball'];
-
-    public string beforeburst;
+    public ToggleGroup taste;
 
     public ToggleGroup triedany;
-    public InputField afterburst;
-    public InputField bestthing;
+    public ToggleGroup afterburst;
+    //public InputField bestthing;
     public ToggleGroup comparison;
-    public InputField plytype;
+    public ToggleGroup plytype;
 
-    //public InputField psecity;  // psecity field
-    //public InputField sarea;
-    //public InputField psename;
-    //public InputField mmname;
-    //public InputField cuname;
-    //public InputField sareacode;
-    public string brandname = "Black Prince";    
-
-    public string memberId;  // memberId field
-
-    //newly added fields
     public InputField occupation;
     public InputField nooftimes;
     public InputField times;
     public InputField each;
-    public InputField others; //optionall field
+    public ToggleGroup others; //optionall field
     public InputField otp;
            
     public InputField subtime;
-    /*$exotel = $myArray['exotel'];
 
-    $callsid=$myArray['callsid1'];*/
-    public InputField DIDNumber;
-    public InputField did_st;
-    public InputField did_et;
+
     public InputField OTPNumber;
-    public InputField OTPDuration;
-           
-    public InputField LFCurrentbrand;
-    public InputField LFVariant;
-    public InputField LFOtherbrand;
-    public InputField LFVariant2;
-    public InputField RFVBrand;
-    public InputField RFVVariant;
-    public InputField RFVOtherbrand;
-    public InputField RFVOthervariant;
-    public InputField LFnoofcigarettes;
-    public InputField RFVnoofcigarettes;
+    public InputField OTPDuration;          
            
     public InputField sign;
     public InputField zone;
@@ -92,11 +63,38 @@ public class SurveyView : View {
     internal Signal<string> OnOTPSubmitSignal;
     internal Signal<SurveyData> OnSurveyDataSubmitSignal;
 
+    public string StartTime;
+    public string StartDate;
     public void Initialize()
-	{
+	{        
 		OnOTPSendClickSignal = new Signal<string> ();
         OnOTPSubmitSignal = new Signal<string>();
         OnSurveyDataSubmitSignal = new Signal<SurveyData>();
+        StartDate = System.DateTime.Now.ToLocalTime().Date.ToString();
+        StartTime = System.DateTime.Now.ToLocalTime().TimeOfDay.ToString();
+    }
+
+    public void OnEnable()
+    {        
+        brand.onValueChanged.AddListener(delegate
+        {
+            OnBrandValueChanged(brand, variant);
+        });
+        obrand.onValueChanged.AddListener(delegate
+        {
+            OnBrandValueChanged(obrand, variant2);
+        });
+        brands = new List<string>();
+        brandAndVarients = new Dictionary<string, List<string>>();
+
+        brandAndVarients = DatabaseManager.brandList;
+        brands = GetAllBrandNames();
+        if (brands != null)
+        {
+            brand.AddOptions(brands);
+            obrand.AddOptions(brands);
+        }
+        
     }
 
 	public void OnOTPButtonClick()
@@ -113,25 +111,97 @@ public class SurveyView : View {
     public void OnSurveyDataSubmit()
     {
         SurveyData data = new SurveyData();
+        data.date = StartDate;
+        data.time = StartTime;
         data.OTPNumber = OTPNumber.text.ToString();
         data.DIDNumber = OTPNumber.text.ToString();
-        data.date = System.DateTime.Now.Date.ToString();
-        data.time = System.DateTime.Now.TimeOfDay.ToString();
-        //ageRadio = GetActive().;
-        data.name = name.ToString();
-        data.brand = brand.ToString();
-        data.email = email.ToString();
-        data.phone = phone.ToString();
-        
+        data.subtime = System.DateTime.Now.ToLocalTime().Date.ToString();
+        data.name = name.text;
+        data.brand = brands[brand.value];
+        data.email = email.text;
+        data.variant = GetVarientValue(variant.value);
+        data.phone = phone.text;
+        data.age = GetActive(ageRadio);
+        data.obrand = brands[obrand.value];
+        data.variant = GetVarientValue(variant2.value);
+        data.taste = GetActive(taste);
+        data.triedany = GetActive(triedany);
+        data.afterburst = GetActive(afterburst);
+        data.comparison = GetActive(comparison);
+        data.plytype = GetActive(plytype);
+        data.occupation = occupation.text;
+        data.nooftimes = nooftimes.text;
+        data.times = times.text;
+        data.each = each.text;
+        data.others = GetActive(others);
+
 
         OnSurveyDataSubmitSignal.Dispatch(data);
     }
 
-    public Toggle GetActive(ToggleGroup group)
+    public string GetActive(ToggleGroup group)
     {
         IEnumerable<Toggle> activeToggles = group.ActiveToggles();
+        string valueSelected = "";
+        foreach (var item in activeToggles)
+        {
+            valueSelected = item.name;
+            Debug.Log(item.name);
+            break;
+        }
+        return valueSelected;
+    }
+
+    public List<string> GetAllBrandNames()
+    {
+        List<string> brands = new List<string>();
+        foreach (var brandName in brandAndVarients)
+        {
+            brands.Add(brandName.Key);
+        }
+        return brands;
+    }
+
+    public void OnBrandValueChanged(Dropdown brand, Dropdown variant)
+    {
+        if (brands != null)
+        {
+            string brandName = brands[brand.value];
+            variant.ClearOptions();
+            List<string> varients = brandAndVarients[brandName];
+            variant.AddOptions(varients);
+        }
+    }
+
+    public void OnDisable()
+    {
+        brand.onValueChanged.RemoveAllListeners();
+        obrand.onValueChanged.RemoveAllListeners();
+    }
+
+    public string GetVarientValue(int index)
+    {
+        string brandName = brands[brand.value];
+        List<string> varients = brandAndVarients[brandName];
+        return varients[index];
+    }
+
+    public void Update()
+    {
+        if(AgeNoToggle.isOn == true)
+        {
+            name.text = "";
+            phone.text = "";
+            email.text = "";
+
+            brand.value = 0;
+            variant.value = 0; 
+            likemost.text = "";
+            obrand.value  = 0;
+            variant2.value = 0;
+            noofsticks.text = ""; ;
+        }
         
-        return null;
     }
 
 }

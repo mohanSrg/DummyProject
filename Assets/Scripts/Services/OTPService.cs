@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using System.Xml;
 
 public class OTPService : IOTPServiceInterface {
 
@@ -42,7 +43,7 @@ public class OTPService : IOTPServiceInterface {
 		ServicePointManager.ServerCertificateValidationCallback = delegate {
 			return true;
 		};
-		string smsURL = "https://twilix.exotel.in/v1/Accounts/razorfish/Sms/send?From=LM-FEDBCK&To="+mobileno+"&Body=One Time Password for Mobile Validation is 3548. Please share your OTP number with our Agent";
+		string smsURL = "https://twilix.exotel.in/v1/Accounts/razorfish/Sms/send?From=LM-FEDBCK&To="+mobileno+"&Body="+Body;
 		string sid = "razorfish";
 		string token = "f40958d07c4094015e5b8972468055d5b1d0ee6d";
 		HttpWebRequest objRequest = (HttpWebRequest)WebRequest.Create (smsURL);
@@ -69,10 +70,15 @@ public class OTPService : IOTPServiceInterface {
 
 
 	public void OnOTPResponse(string response)
-	{  
+	{
+        XmlDocument doc = new XmlDocument();
+        doc.LoadXml(response);
+        string json = JsonConvert.SerializeXmlNode(doc);
+        Debug.Log(json);
         if(response != null)
         {
-            OTPResponse responseData = JsonConvert.DeserializeObject<OTPResponse>(response);
+            OTPResponse responseData = JsonConvert.DeserializeObject<OTPResponse>(json);
+            Debug.Log(responseData.TwilioResponse.SMSMessage.Status);
             OTPSuccessfulySentSignal.Dispatch(responseData);
         }
 	}

@@ -30,4 +30,30 @@ public class StickPriceTrackerData {
 	public string sarea;
 	public string sareacod;
 	public string wdname;
+
+    public StickPriceTrackerData()
+    {
+        gfk_pric = 0;
+        cla_price = 0;
+        mar_price = 0;
+        gfp_price = 0;
+        other_price = 0;
+        other_price2 = 0;
+        other_price3 = 0;
+        gfk_price_paisa = 0;
+        cla_price_paisa = 0;
+        mar_price_paisa = 0;
+        gfp_price_paisa = 0;
+        other_price1_paisa = 0;
+        other_price2_paisa = 0;
+        other_price3_paisa = 0;
+        obrands1 = "";
+        obrands2 = "";
+        obrands3 = "";
+        psename = "";
+        surveycity = "";
+        sarea = "";
+        sareacod = "";
+        wdname = "";
+    }
 }

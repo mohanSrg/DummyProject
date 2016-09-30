@@ -32,4 +32,9 @@ public class LoginView : View {
 		LoginClickedSignal.Dispatch (uname, pwd);
 	}
 
+    public void OnFeedBackCompletedOkClicked()
+    {
+        Application.Quit();
+    }
+
 }

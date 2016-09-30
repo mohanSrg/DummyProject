@@ -2,6 +2,7 @@
 using System.Collections;
 using strange.extensions.mediation.impl;
 using System;
+using UnityEngine.UI;
 
 public class SurveyMediator : Mediator {
 
@@ -52,17 +53,26 @@ public class SurveyMediator : Mediator {
 
     private void OnOTPSuccessfulySent(OTPResponse response)
     {
-        if (response.Result == "success")
+        SurveyView.OTPResponsePanel.transform.GetChild(1).GetComponent<Text>().text = "";
+        if (response.TwilioResponse.SMSMessage.Status == "queued")
         {
-            SurveyView.EnterOTPPanel.SetActive(true);
+            SurveyView.OTPResponsePanel.SetActive(true);
+            SurveyView.OTPResponsePanel.transform.GetChild(1).GetComponent<Text>().text = "OTP Successfully Sent";
         }
     }
     private void OnOTPEntered(string number)
     {
-        if(otpnumber == Int32.Parse(number))
+        SurveyView.OTPResponsePanel.transform.GetChild(1).GetComponent<Text>().text = "";
+        if (otpnumber == Int32.Parse(number))
         {
-            SurveyView.EnterOTPPanel.SetActive(false);
+            SurveyView.OTPResponsePanel.SetActive(true);
+            SurveyView.OTPResponsePanel.transform.GetChild(1).GetComponent<Text>().text = "Please submit the data";
             SurveyView.SubmitButton.enabled = true;
+        }
+        else
+        {
+            SurveyView.OTPResponsePanel.SetActive(true);
+            SurveyView.OTPResponsePanel.transform.GetChild(1).GetComponent<Text>().text = "Enter valid OTP";
         }
     }
 
@@ -77,8 +87,19 @@ public class SurveyMediator : Mediator {
         
         SurveyDataSubmitSignal.Dispatch(data);
     }
+
+    string feedbackCompleted = "";
     public void OnFeedBackCompleted()
     {
-        SurveyView.FeedBackcompleted.SetActive(true);
+        feedbackCompleted = "success";
+    }
+
+    public void Update()
+    {
+        if(feedbackCompleted == "success")
+        {
+            SurveyView.FeedBackcompleted.SetActive(true);
+            this.gameObject.SetActive(false);
+        }
     }
 }

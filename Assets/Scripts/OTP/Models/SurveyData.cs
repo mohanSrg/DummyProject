@@ -60,6 +60,12 @@ public class SurveyData  {
     public string OTPNumber;
     public string OTPDuration;
 
+    public string sign;
+    public string zone;
+    public string outletnew;
+    public string location;
+    public string total;
+
     public string LFCurrentbrand;
     public string LFVariant;
     public string LFOtherbrand;
@@ -70,10 +76,4 @@ public class SurveyData  {
     public string RFVOthervariant;
     public string LFnoofcigarettes;
     public string RFVnoofcigarettes;
-
-    public string sign;
-    public string zone;
-    public string outletnew;
-    public string location;
-    public string total;
 }

@@ -38,7 +38,9 @@ public class StickPriceTrackerMediator : Mediator{
         StickPriceTrackerView.HeaderDetailsPanel.SetActive(true);
         StickPriceTrackerView.LoginId.text = string.Format("Login Id : {0}",details.memberId);
 		StickPriceTrackerView.SurveyorName.GetComponentInChildren<Text>().text= details.psename;
-		StickPriceTrackerView.SurveyorName.interactable = false;
+        StickPriceTrackerView.Surveycity.text = details.psecity;
+        StickPriceTrackerView.Surveycity.interactable = false;
+        StickPriceTrackerView.SurveyorName.interactable = false;
         
         memberid = details.memberId;
 	}
@@ -50,11 +52,19 @@ public class StickPriceTrackerMediator : Mediator{
         data.time = System.DateTime.Now.TimeOfDay.ToString();
         StickPriceTrackerDataSubmitSignal.Dispatch (data);
 	}
-
+    string StickPriceTrackerSResponse = "";
     private void OnStickPriceTrackerSuccessfullySResponse()
-    {        
-        StickPriceTrackerView.StickPriceTrackerPanel.SetActive(false);
-        StickPriceTrackerView.SurveyPagePanel.SetActive(true);
+    {
+        StickPriceTrackerSResponse = "success";
+    }
+
+    public void Update()
+    {
+        if(StickPriceTrackerSResponse == "success")
+        {
+            StickPriceTrackerView.StickPriceTrackerPanel.SetActive(false);
+            StickPriceTrackerView.SurveyPagePanel.SetActive(true);
+        }
     }
 
 }
