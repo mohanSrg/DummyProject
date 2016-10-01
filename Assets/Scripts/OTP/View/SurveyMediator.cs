@@ -43,36 +43,50 @@ public class SurveyMediator : Mediator {
 
 
     }
-    public int otpnumber = 0;
+    public int otpnumber = -1;
     public void OnOTPSendClicked(string mobileNo)
 	{
-        System.Random sdf = new System.Random();
-        otpnumber = sdf.Next(111111,999999);
-        OTPRequestSignal.Dispatch (mobileNo, otpnumber);
+        if(mobileNo != "" )
+        {
+            System.Random sdf = new System.Random();
+            otpnumber = sdf.Next(111111,999999);
+            OTPRequestSignal.Dispatch (mobileNo, otpnumber);
+        }
+        else
+        {
+            SurveyView.OTPResponsePanel.SetActive(true);
+            SurveyView.OTPResponsePanel.transform.GetChild(2).GetComponent<Text>().text = "Enter valid OTP";
+        }
 	}
 
     private void OnOTPSuccessfulySent(OTPResponse response)
     {
-        SurveyView.OTPResponsePanel.transform.GetChild(1).GetComponent<Text>().text = "";
+        SurveyView.OTPResponsePanel.transform.GetChild(2).GetComponent<Text>().text = "";
         if (response.TwilioResponse.SMSMessage.Status == "queued")
         {
             SurveyView.OTPResponsePanel.SetActive(true);
-            SurveyView.OTPResponsePanel.transform.GetChild(1).GetComponent<Text>().text = "OTP Successfully Sent";
+            SurveyView.EnterOTPField.SetActive(true);
+            SurveyView.OTPResponsePanel.transform.GetChild(2).GetComponent<Text>().text = "OTP Successfully Sent";
         }
     }
     private void OnOTPEntered(string number)
     {
-        SurveyView.OTPResponsePanel.transform.GetChild(1).GetComponent<Text>().text = "";
+        SurveyView.OTPResponsePanel.transform.GetChild(2).GetComponent<Text>().text = "";
+        if(number == "")
+        {
+            number = "0";
+        }
         if (otpnumber == Int32.Parse(number))
         {
             SurveyView.OTPResponsePanel.SetActive(true);
-            SurveyView.OTPResponsePanel.transform.GetChild(1).GetComponent<Text>().text = "Please submit the data";
+            SurveyView.OTPResponsePanel.transform.GetChild(2).GetComponent<Text>().text = "Please submit the data";
+            SurveyView.EnterOTPField.SetActive(true);
             SurveyView.SubmitButton.enabled = true;
         }
         else
         {
             SurveyView.OTPResponsePanel.SetActive(true);
-            SurveyView.OTPResponsePanel.transform.GetChild(1).GetComponent<Text>().text = "Enter valid OTP";
+            SurveyView.OTPResponsePanel.transform.GetChild(2).GetComponent<Text>().text = "Enter valid OTP";
         }
     }
 

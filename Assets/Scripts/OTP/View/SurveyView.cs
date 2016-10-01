@@ -10,9 +10,8 @@ public class SurveyView : View {
     public DatabaseManager DatabaseManager;
     public Dictionary<string, List<string>> brandAndVarients;
     public List<string> brands;
-
     
-
+    public GameObject EnterOTPField;
     public GameObject OTPResponsePanel;
     public Button SubmitButton;
     public GameObject FeedBackcompleted;
@@ -72,6 +71,10 @@ public class SurveyView : View {
         OnSurveyDataSubmitSignal = new Signal<SurveyData>();
         StartDate = System.DateTime.Now.ToLocalTime().Date.ToString();
         StartTime = System.DateTime.Now.ToLocalTime().TimeOfDay.ToString();
+        phone.contentType = InputField.ContentType.IntegerNumber;
+        OTPNumber.contentType = InputField.ContentType.IntegerNumber;
+        nooftimes.contentType = InputField.ContentType.IntegerNumber;
+        MobileNumber.contentType = InputField.ContentType.IntegerNumber;
     }
 
     public void OnEnable()
@@ -124,7 +127,7 @@ public class SurveyView : View {
         data.age = GetActive(ageRadio);
         data.obrand = brands[obrand.value];
         data.variant = GetVarientValue(variant2.value);
-        data.taste = GetActive(taste);
+        //data.taste = GetActive(taste);
         data.triedany = GetActive(triedany);
         data.afterburst = GetActive(afterburst);
         data.comparison = GetActive(comparison);
